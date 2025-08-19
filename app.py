@@ -1,29 +1,23 @@
-from flask import Flask, request, jsonify
-import os
+from flask import Flask, jsonify, request
+import requests
 
 app = Flask(__name__)
 
-@app.route("/", methods=["GET"])
-def accueil():
-    return "Bienvenue sur l'API de recherche de sous-traitants !"
+@app.route('/search')
+def search():
+    query = request.args.get('q', 'electricien')
+    params = {
+        "engine": "google",
+        "q": query,
+        "api_key": "3195e9fdfcda084142ea2316c4cc2f5f18c3104823a775cf51d7fa89679269d1",
+        "hl": "fr",
+        "gl": "fr"
+    }
 
-@app.route("/chercher", methods=["GET"])
-def chercher():
-    mot_cle = request.args.get("q", "")
-    results = [
-        {
-            "nom": f"Résultat pour '{mot_cle}' - 1",
-            "url": "https://example.com/1",
-            "description": f"Description simulée pour '{mot_cle}' - 1"
-        },
-        {
-            "nom": f"Résultat pour '{mot_cle}' - 2",
-            "url": "https://example.com/2",
-            "description": f"Description simulée pour '{mot_cle}' - 2"
-        }
-    ]
-    return jsonify(results)
+    response = requests.get("https://serpapi.com/search", params=params)
 
-if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 5000))
-    app.run(host="0.0.0.0", port=port)
+    if response.status_code == 200:
+        results = response.json().get("organic_results", [])
+        return jsonify(results)
+    else:
+        return jsonify({"error": response.status_code}), response.status_code
