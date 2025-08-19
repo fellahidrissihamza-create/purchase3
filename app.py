@@ -3,6 +3,10 @@ import os
 
 app = Flask(__name__)
 
+@app.route("/", methods=["GET"])
+def accueil():
+    return "Bienvenue sur l'API de recherche de sous-traitants !"
+
 @app.route("/chercher", methods=["GET"])
 def chercher():
     mot_cle = request.args.get("q", "")
