@@ -1,11 +1,11 @@
 from flask import Flask, request, jsonify
+import os
 
 app = Flask(__name__)
 
 @app.route("/chercher", methods=["GET"])
 def chercher():
     mot_cle = request.args.get("q", "")
-    # Simulated search results
     results = [
         {
             "nom": f"Résultat pour '{mot_cle}' - 1",
@@ -21,4 +21,5 @@ def chercher():
     return jsonify(results)
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5000)
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host="0.0.0.0", port=port)
